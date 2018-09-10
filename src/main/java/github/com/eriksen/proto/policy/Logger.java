@@ -5,6 +5,7 @@ import java.util.Date;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,13 +14,16 @@ import org.springframework.stereotype.Component;
 @Component // 组件，该类纳入到bean中
 @Aspect // 定义切面
 public class Logger {
+  @Pointcut("execution(public * github.com.eriksen.proto.controller..*.*(..))")
+  public void repositoryLogger() {
+  }
 
-  @Before("execution(* github.com.eriksen.proto.controller..*.*(..))")  
+  @Before("repositoryLogger()")
   public void preRetrieve() {
     System.out.println("[Pre]" + new Date());
   }
 
-  @After("execution(* github.com.eriksen.proto.controller..*.*(..))")
+  @After("repositoryLogger()")
   public void postRetrieve() {
     System.out.println("[Post]" + new Date());
   }
