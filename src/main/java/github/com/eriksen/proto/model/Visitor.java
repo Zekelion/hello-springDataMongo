@@ -2,7 +2,6 @@ package github.com.eriksen.proto.model;
 
 import java.util.Date;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -18,7 +17,8 @@ public class Visitor {
   @Id
   private String id;
 
-  private ObjectId customer;
+  // save as objectId
+  private String customer;
 
   @Field("createdTime")
   private Date createdTime = new Date();
