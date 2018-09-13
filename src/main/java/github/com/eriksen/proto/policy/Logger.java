@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component // 组件，该类纳入到bean中
 @Aspect // 定义切面
 public class Logger {
-  @Pointcut("execution(public * github.com.eriksen.proto.controller..*.*(..))")
+  @Pointcut("execution(public * github.com.eriksen.proto.repository..*.*(..))")
   public void repositoryLogger() {
   }
 
