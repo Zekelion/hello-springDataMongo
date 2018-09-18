@@ -48,6 +48,6 @@ public class TransactionListenerImpl implements TransactionListener {
     }
     System.out.println("MQ check msg, status:" + status);
 
-    return LocalTransactionState.COMMIT_MESSAGE;
+    return LocalTransactionState.ROLLBACK_MESSAGE;
   }
 }
