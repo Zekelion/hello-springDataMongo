@@ -36,10 +36,19 @@ public class PutEvent {
   @Around("save()")
   public void around(ProceedingJoinPoint pjp) throws Throwable {
     try {
-      Object obj = pjp.proceed();
-      Method method = obj.getClass().getMethod("getId", new Class[] {});
-      String id = method.invoke(obj, new Object[] {}).toString();
-      Message msg = new Message("Proto_db", "modify", id, obj.toString().getBytes());
+      // Before
+      Method method = pjp.getClass().getMethod("getId", new Class[] {});
+      String id = method.invoke(pjp, new Object[] {}).toString();
+      Message msg = new Message("Proto_db", "modify", id, pjp.toString().getBytes());
+
+      // Transactional msg
+      SendResult sendResult = transactionMQProducer.sendMessageInTransaction(msg, pjp);
+
+      // Invoke by local transaction
+      // pjp.proceed();
+
+      // After
+      System.out.println(sendResult);
 
       // Synchronously
       // SendResult sendResult = defaultMQProducer.send(msg);
@@ -58,10 +67,6 @@ public class PutEvent {
       // e.printStackTrace();
       // }
       // });
-
-      // Transactional msg
-      SendResult sendResult = transactionMQProducer.sendMessageInTransaction(msg, null);
-      System.out.println(sendResult);
 
       return;
     } catch (Exception e) {

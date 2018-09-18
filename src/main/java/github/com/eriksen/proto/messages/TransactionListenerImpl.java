@@ -1,27 +1,32 @@
 package github.com.eriksen.proto.messages;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
+import org.aspectj.lang.ProceedingJoinPoint;
 
 /**
  * TransactionListenerImpl
  */
 public class TransactionListenerImpl implements TransactionListener {
-  private AtomicInteger transactionIndex = new AtomicInteger(0);
-
   private ConcurrentHashMap<String, Integer> localTrans = new ConcurrentHashMap<>();
 
   @Override
   public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
-    int value = transactionIndex.getAndIncrement();
-    int status = value % 3;
-    localTrans.put(msg.getTransactionId(), status);
-    System.out.println("Half msg sent, status:" + status);
+    if (arg instanceof ProceedingJoinPoint){
+      try {
+        Method method = arg.getClass().getMethod("proceed", new Class[] {});
+        method.invoke(arg, new Object[]{});
+        return LocalTransactionState.COMMIT_MESSAGE;
+      } catch (Exception e) {
+        System.out.println("Failed to process jointPoint" + e);
+        return LocalTransactionState.ROLLBACK_MESSAGE;
+      }
+    }
 
     return LocalTransactionState.UNKNOW;
   }
