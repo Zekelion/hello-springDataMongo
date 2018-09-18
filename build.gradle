@@ -27,7 +27,6 @@ repositories {
 	maven { url "https://repo.spring.io/milestone" }
 }
 
-
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-mongodb')
 	compile('org.springframework.boot:spring-boot-starter-aop')
@@ -38,4 +37,12 @@ dependencies {
   compile('org.springframework.boot:spring-boot-starter-jetty')
 	compileOnly('org.projectlombok:lombok')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+task master << {
+    bootRun.systemProperty 'spring.profiles.active', 'master'
+}
+
+task slave << {
+    bootRun.systemProperty 'spring.profiles.active', 'slave'
 }

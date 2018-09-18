@@ -25,6 +25,12 @@ RocketMQ v4.3.0
 //===================================
 gradle clean build
 
+// bootRun
+gradle master bootRun
+
+gradle slave bootRun
+
+// jar
 java -jar build/libs/proto-0.0.1-SNAPSHOT.jar --spring.profiles.active=master
 
 java -jar build/libs/proto-0.0.1-SNAPSHOT.jar --spring.profiles.active=slave
