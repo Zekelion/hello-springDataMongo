@@ -5,7 +5,7 @@ spring data mongo demo
 
 MongoDB ^v3.4.10
 
-RocketMQ v4.3.0
+[RocketMQ v4.3.0](http://rocketmq.apache.org/docs/quick-start/)
 
 ## Usage
 
