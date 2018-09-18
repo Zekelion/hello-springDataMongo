@@ -21,9 +21,11 @@ public class TransactionListenerImpl implements TransactionListener {
       try {
         Method method = arg.getClass().getMethod("proceed", new Class[] {});
         method.invoke(arg, new Object[]{});
+        localTrans.put(msg.getTransactionId(), 1);
         return LocalTransactionState.COMMIT_MESSAGE;
       } catch (Exception e) {
         System.out.println("Failed to process jointPoint" + e);
+        localTrans.put(msg.getTransactionId(), 2);
         return LocalTransactionState.ROLLBACK_MESSAGE;
       }
     }
