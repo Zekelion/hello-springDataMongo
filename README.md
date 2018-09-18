@@ -10,8 +10,6 @@ RocketMQ v4.3.0
 ## Usage
 
 ```
-gradle clean build
-
 //================ 
 // start rocketMQ
 //================
@@ -22,7 +20,19 @@ gradle clean build
 // Broker
 <rocketmq-dir>/distribution/target/apache-rocketmq/bin/mqbroker
 
+//===================================
+// Start SpringBoot Rest Application
+//===================================
+gradle clean build
+
 java -jar build/libs/proto-0.0.1-SNAPSHOT.jar --spring.profiles.active=master
 
 java -jar build/libs/proto-0.0.1-SNAPSHOT.jar --spring.profiles.active=slave
+
+//==================
+// Request Put API
+//==================
+curl -v -X PUT -H "Content-Type: application/json" -d '{"id": "5b951c7a958ff683fc496ce8","name":3}' http://localhost:9000/v1.0/customers // slave
+
+curl -v -X PUT -H "Content-Type: application/json" -d '{"id": "5b951c7a958ff683fc496ce8","name":3}' http://localhost:8080/v1.0/customers // master
 ```
