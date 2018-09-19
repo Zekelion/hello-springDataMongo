@@ -7,6 +7,8 @@ import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -19,13 +21,18 @@ public class TransactionListenerImpl implements TransactionListener {
   @Autowired
   private RedisTemplate<String, Integer> redisTemplate;
 
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
+
   @Override
   public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
     if (arg instanceof ProceedingJoinPoint) {
       try {
         redisTemplate.opsForValue().set(msg.getTransactionId(), 0);
+
         Method method = arg.getClass().getMethod("proceed", new Class[] {});
         method.invoke(arg, new Object[] {});
+        logger.info("executeLocalTransaction arg proceed");
+
         redisTemplate.opsForValue().set(msg.getTransactionId(), 1);
         return LocalTransactionState.UNKNOW;
       } catch (Exception e) {
@@ -51,7 +58,7 @@ public class TransactionListenerImpl implements TransactionListener {
         return LocalTransactionState.ROLLBACK_MESSAGE;
       }
     }
-    System.out.println("MQ check msg, status:" + status);
+    logger.info("MQ check msg, status:" + status);
 
     return LocalTransactionState.ROLLBACK_MESSAGE;
   }

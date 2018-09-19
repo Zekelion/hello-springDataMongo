@@ -16,6 +16,8 @@ import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.apache.rocketmq.common.message.MessageExt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,7 @@ public class RocketMQConf {
 
   @Autowired
   private TransactionListener transactionListenerImpl;
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Bean
   public TransactionMQProducer transactionMQProducer() throws MQClientException {
@@ -70,7 +73,7 @@ public class RocketMQConf {
     
       @Override
       public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-        System.out.printf("%s Receive New Messages: %s %n", Thread.currentThread().getName(), msgs);
+        logger.info("Receive New Messages: " + msgs);
         return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
       }
     });

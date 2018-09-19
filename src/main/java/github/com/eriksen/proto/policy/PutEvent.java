@@ -12,6 +12,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +35,8 @@ public class PutEvent {
   @Autowired
   private TransactionMQProducer transactionMQProducer;
 
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
+
   @Around("save()")
   public void around(ProceedingJoinPoint pjp) throws Throwable {
     try {
@@ -48,7 +52,7 @@ public class PutEvent {
       // pjp.proceed();
 
       // After
-      System.out.println(sendResult);
+      logger.info("Save Event Msg Sent " + sendResult);
 
       // Synchronously
       // SendResult sendResult = defaultMQProducer.send(msg);
