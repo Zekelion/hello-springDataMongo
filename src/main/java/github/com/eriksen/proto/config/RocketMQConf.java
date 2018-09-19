@@ -16,21 +16,25 @@ import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.apache.rocketmq.common.message.MessageExt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import github.com.eriksen.proto.messages.TransactionListenerImpl;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * RocketMQ configuration
  */
 @Configuration
+@DependsOn("redisTemplate")
 public class RocketMQConf {
+
+  @Autowired
+  private TransactionListener transactionListenerImpl;
 
   @Bean
   public TransactionMQProducer transactionMQProducer() throws MQClientException {
     TransactionMQProducer producer = new TransactionMQProducer("proto_svc_trans_producer");
-    TransactionListener transactionListener = new TransactionListenerImpl();
+    // TransactionListener transactionListener = new TransactionListenerImpl();
     ExecutorService executorService = new ThreadPoolExecutor(2, 5, 100, TimeUnit.SECONDS, new ArrayBlockingQueue<>(200), new ThreadFactory(){
     
       @Override
@@ -43,7 +47,7 @@ public class RocketMQConf {
 
     producer.setNamesrvAddr("localhost:9876");
     producer.setExecutorService(executorService);
-    producer.setTransactionListener(transactionListener);
+    producer.setTransactionListener(transactionListenerImpl);
 
     producer.start();
     return producer;

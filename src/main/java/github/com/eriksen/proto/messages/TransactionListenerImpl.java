@@ -1,31 +1,36 @@
 package github.com.eriksen.proto.messages;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
 /**
  * TransactionListenerImpl
  */
+@Component
 public class TransactionListenerImpl implements TransactionListener {
-  private ConcurrentHashMap<String, Integer> localTrans = new ConcurrentHashMap<>();
+  @Autowired
+  private RedisTemplate<String, Integer> redisTemplate;
 
   @Override
   public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
-    if (arg instanceof ProceedingJoinPoint){
+    if (arg instanceof ProceedingJoinPoint) {
       try {
+        redisTemplate.opsForValue().set(msg.getTransactionId(), 0);
         Method method = arg.getClass().getMethod("proceed", new Class[] {});
-        method.invoke(arg, new Object[]{});
-        localTrans.put(msg.getTransactionId(), 1);
-        return LocalTransactionState.COMMIT_MESSAGE;
+        method.invoke(arg, new Object[] {});
+        redisTemplate.opsForValue().set(msg.getTransactionId(), 1);
+        return LocalTransactionState.UNKNOW;
       } catch (Exception e) {
         System.out.println("Failed to process jointPoint" + e);
-        localTrans.put(msg.getTransactionId(), 2);
+        redisTemplate.opsForValue().set(msg.getTransactionId(), 2);
         return LocalTransactionState.ROLLBACK_MESSAGE;
       }
     }
@@ -35,7 +40,7 @@ public class TransactionListenerImpl implements TransactionListener {
 
   @Override
   public LocalTransactionState checkLocalTransaction(MessageExt msg) {
-    Integer status = localTrans.get(msg.getTransactionId());
+    Integer status = redisTemplate.opsForValue().get(msg.getTransactionId());
     if (null != status) {
       switch (status) {
       case 0:
