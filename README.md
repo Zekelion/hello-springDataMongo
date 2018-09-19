@@ -5,6 +5,8 @@ spring data mongo demo
 
 MongoDB ^v3.4.10
 
+Redis ^v3.2.11 (port: 6279)
+
 [RocketMQ v4.3.0](http://rocketmq.apache.org/docs/quick-start/)
 
 ## Usage
