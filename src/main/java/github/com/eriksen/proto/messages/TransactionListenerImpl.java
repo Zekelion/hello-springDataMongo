@@ -48,6 +48,7 @@ public class TransactionListenerImpl implements TransactionListener {
   @Override
   public LocalTransactionState checkLocalTransaction(MessageExt msg) {
     Integer status = redisTemplate.opsForValue().get(msg.getTransactionId());
+    logger.info("MQ check msg, status:" + status);
     if (null != status) {
       switch (status) {
       case 0:
@@ -58,7 +59,6 @@ public class TransactionListenerImpl implements TransactionListener {
         return LocalTransactionState.ROLLBACK_MESSAGE;
       }
     }
-    logger.info("MQ check msg, status:" + status);
 
     return LocalTransactionState.ROLLBACK_MESSAGE;
   }
