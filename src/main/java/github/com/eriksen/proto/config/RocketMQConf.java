@@ -34,7 +34,6 @@ public class RocketMQConf {
   @Bean
   public TransactionMQProducer transactionMQProducer() throws MQClientException {
     TransactionMQProducer producer = new TransactionMQProducer("proto_svc_trans_producer");
-    // TransactionListener transactionListener = new TransactionListenerImpl();
     ExecutorService executorService = new ThreadPoolExecutor(2, 5, 100, TimeUnit.SECONDS, new ArrayBlockingQueue<>(200), new ThreadFactory(){
     
       @Override
