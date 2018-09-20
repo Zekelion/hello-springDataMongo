@@ -15,6 +15,7 @@ import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,7 @@ public class RocketMQConf {
     DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("proto_svc_consumer");
     consumer.setNamesrvAddr("localhost:9876");
     consumer.subscribe("Proto_db", "*");
+    consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET); // offset will store in Broker
 
     consumer.registerMessageListener(new MessageListenerConcurrently(){
     
