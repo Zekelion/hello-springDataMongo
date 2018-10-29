@@ -1,6 +1,7 @@
 buildscript {
 	ext {
 		springBootVersion = '2.1.0.M2'
+		verifierVersion = '1.2.1.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -9,6 +10,7 @@ buildscript {
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("org.springframework.cloud:spring-cloud-contract-gradle-plugin:${verifierVersion}")
 	}
 }
 
@@ -16,6 +18,8 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'spring-cloud-contract'
+apply plugin: 'maven-publish'
 
 group = 'github.com.eriksen'
 version = '0.0.1-SNAPSHOT'
@@ -39,6 +43,32 @@ dependencies {
   compile('org.springframework.boot:spring-boot-starter-jetty')
 	compileOnly('org.projectlombok:lombok')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('org.springframework.cloud:spring-cloud-contract-verifier:2.0.2.RELEASE')
+	// testCompile('org.springframework.cloud:spring-cloud-starter-contract-stub-runner:2.0.2.RELEASE')
+	testCompile('io.rest-assured:rest-assured:3.2.0')
+	testCompile('io.rest-assured:spring-mock-mvc:3.2.0')
+	testCompile('org.springframework.cloud:spring-cloud-stream-test-support')
+}
+
+contracts {
+		baseClassMappings {
+			baseClassMapping(".*msg.*","github.com.eriksen.proto.ContractVerifierBase")
+			baseClassMapping(".*rest.*", "github.com.eriksen.proto.ContractVerifierBase")
+		}
+}
+
+publishing {
+    publications {
+        stubs(MavenPublication) {
+            groupId 'github.com.eriksen'
+            artifactId "springboot-mongo"
+            version '0.0.1'
+            artifact verifierStubsJar
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
 }
 
 task master << {
