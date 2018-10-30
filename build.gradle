@@ -38,9 +38,9 @@ dependencies {
 	compile('redis.clients:jedis')
 	compile('org.springframework.boot:spring-boot-starter-web') {
 		exclude module: 'spring-boot-starter-tomcat'
-  }
+  	}
 	compile('org.apache.rocketmq:rocketmq-client:4.3.0')
-  compile('org.springframework.boot:spring-boot-starter-jetty')
+  	compile('org.springframework.boot:spring-boot-starter-jetty')
 	compileOnly('org.projectlombok:lombok')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.cloud:spring-cloud-contract-verifier:2.0.2.RELEASE')
